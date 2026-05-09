@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ÉRSHE · 二奢话术助手</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0a0a0a;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #f5f5f0;
+            overflow: hidden;
+        }
+
+        /* === Header === */
+        header {
+            background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+            padding: 20px 28px;
+            border-bottom: 1px solid #2a2a2a;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-shrink: 0;
+            position: relative;
+        }
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(197,165,90,0.3), transparent);
+        }
+        .brand { display: flex; align-items: center; gap: 14px; }
+        .brand-icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, #C5A55A, #a8893a);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 700; color: #0a0a0a;
+        }
+        .brand-text { display: flex; flex-direction: column; }
+        .brand-name { font-family: 'Noto Serif SC', serif; font-size: 18px; font-weight: 700; color: #f5f5f0; letter-spacing: 2px; }
+        .brand-sub { font-size: 11px; color: #888; letter-spacing: 3px; text-transform: uppercase; font-weight: 300; }
+        .header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+        .status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #52c41a; }
+        .status-text { font-size: 12px; color: #888; }
+        .header-btn {
+            background: none; border: 1px solid #333; border-radius: 6px;
+            padding: 6px 12px; font-size: 12px; color: #999; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .header-btn:hover { border-color: #C5A55A; color: #C5A55A; }
+
+        /* === Chat Container === */
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            scroll-behavior: smooth;
+        }
+        #chat-box::-webkit-scrollbar { width: 4px; }
+        #chat-box::-webkit-scrollbar-track { background: transparent; }
+        #chat-box::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+        /* === Messages === */
+        .msg {
+            max-width: 76%;
+            padding: 16px 20px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-word;
+            animation: msgIn 0.3s ease;
+        }
+        @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .msg.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #C5A55A 0%, #b8943c 100%);
+            color: #0a0a0a;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+        .msg.bot {
+            align-self: flex-start;
+            background: linear-gradient(135deg, #1e1e1e 0%, #1a1a1a 100%);
+            color: #e0ddd5;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #2a2a2a;
+        }
+        .msg.bot .label {
+            font-size: 11px;
+            color: #C5A55A;
+            margin-bottom: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .msg.bot .label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(197,165,90,0.3), transparent);
+        }
+
+        /* === Loading === */
+        .loading {
+            align-self: flex-start;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            padding: 18px 24px;
+            border-radius: 16px;
+            display: none;
+            gap: 8px;
+            align-items: center;
+            border-bottom-left-radius: 4px;
+        }
+        .loading.show { display: flex; }
+        .loading span {
+            width: 8px; height: 8px;
+            background: #C5A55A;
+            border-radius: 50%;
+            animation: pulse 1.4s infinite;
+        }
+        .loading span:nth-child(2) { animation-delay: 0.2s; }
+        .loading span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes pulse {
+            0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
+            30% { opacity: 1; transform: scale(1); }
+        }
+
+        /* === Welcome === */
+        .welcome {
+            text-align: center;
+            padding: 60px 20px 40px;
+            max-width: 480px;
+            margin: auto;
+        }
+        .welcome .logo {
+            width: 72px; height: 72px;
+            background: linear-gradient(135deg, #C5A55A, #a8893a);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 24px;
+            box-shadow: 0 8px 32px rgba(197,165,90,0.15);
+        }
+        .welcome h2 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 22px;
+            color: #f5f5f0;
+            margin-bottom: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .welcome .tagline {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.9;
+            margin-bottom: 8px;
+        }
+        .welcome .tagline em { color: #C5A55A; font-style: normal; }
+        .welcome .examples {
+            margin-top: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            list-style: none;
+        }
+        .welcome .examples li {
+            font-size: 13px;
+            color: #999;
+            cursor: pointer;
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s;
+            text-align: left;
+            background: rgba(255,255,255,0.02);
+        }
+        .welcome .examples li:hover {
+            border-color: #C5A55A;
+            color: #f5f5f0;
+            background: rgba(197,165,90,0.05);
+            transform: translateX(4px);
+        }
+
+        /* === Input Area === */
+        .input-area {
+            background: #0d0d0d;
+            border-top: 1px solid #2a2a2a;
+            padding: 16px 28px 20px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .input-area::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(197,165,90,0.15), transparent);
+        }
+        .input-area textarea {
+            flex: 1;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 14px;
+            color: #f5f5f0;
+            resize: none;
+            height: 48px;
+            max-height: 120px;
+            outline: none;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        .input-area textarea:focus { border-color: #C5A55A; }
+        .input-area textarea::placeholder { color: #555; }
+        .input-area button {
+            background: linear-gradient(135deg, #C5A55A, #b8943c);
+            color: #0a0a0a;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            height: 48px;
+        }
+        .input-area button:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(197,165,90,0.2); }
+        .input-area button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* === Quick Reply === */
+        .quick-reply { display: none; gap: 8px; padding: 8px 28px; background: #0d0d0d; overflow-x: auto; flex-shrink: 0; }
+        .quick-reply.show { display: flex; }
+        .quick-reply button {
+            flex-shrink: 0;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 12px;
+            color: #999;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .quick-reply button:hover { border-color: #C5A55A; color: #C5A55A; }
+        .quick-reply button.primary { background: rgba(197,165,90,0.1); border-color: #C5A55A; color: #C5A55A; }
+
+        /* === Error Bar === */
+        .error-bar { display: none; background: rgba(230,70,60,0.1); border-bottom: 1px solid rgba(230,70,60,0.2); padding: 10px 28px; font-size: 13px; color: #e8463c; }
+
+        @media (max-width: 600px) {
+            header { padding: 14px 16px; }
+            #chat-box { padding: 20px 16px; }
+            .msg { max-width: 88%; }
+            .input-area { padding: 12px 16px 16px; }
+            .input-area textarea { font-size: 16px; }
+            .quick-reply { padding: 8px 16px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <div class="brand-icon">E</div>
+            <div class="brand-text">
+                <div class="brand-name">ÉRSHE</div>
+                <div class="brand-sub">Luxury Script Assistant</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <span class="status-dot"></span>
+            <span class="status-text" id="status-text">Online</span>
+            <button class="header-btn" onclick="exportChat()">导出</button>
+        </div>
+    </header>
+
+    <div class="error-bar" id="error-bar"></div>
+    <div class="quick-reply" id="quick-reply"></div>
+
+    <div id="chat-box">
+        <div class="welcome" id="welcome">
+            <div class="logo">✦</div>
+            <h2>二奢话术助手</h2>
+            <p class="tagline">
+                输入劳力士的型号、成色与客户对话<br>
+                自动生成 <em>知识库版</em> 与 <em>大模型版</em> 双套话术
+            </p>
+            <ul class="examples" id="example-list">
+                <li onclick="useExample(this)">熊猫迪 95 新全套带保卡现在什么价</li>
+                <li onclick="useExample(this)">绿水鬼 126610LV 客户说价格太低怎么办</li>
+                <li onclick="useExample(this)">劳力士保卡怎么看年份，2020 年保卡有影响吗</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <textarea id="input" rows="1" placeholder="输入型号、成色、配件和客户对话..." onkeydown="onEnter(event)"></textarea>
+        <button id="send-btn" onclick="send()">发送</button>
+    </div>
+
+    <script>
+        function addMsg(html, cls) {
+            const box = document.getElementById('chat-box');
+            const welcome = document.getElementById('welcome');
+            if (welcome) welcome.style.display = 'none';
+            const div = document.createElement('div');
+            div.className = 'msg ' + cls;
+            div.innerHTML = html;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+            return div;
+        }
+
+        function addBotMsg(text) {
+            return addMsg(
+                '<div class="label">✦ 二奢话术助手</div>' + text.replace(/\n/g, '<br>'),
+                'bot'
+            );
+        }
+
+        function addUserMsg(text) { return addMsg(text, 'user'); }
+
+        function showLoading() {
+            const box = document.getElementById('chat-box');
+            const d = document.createElement('div');
+            d.className = 'loading show';
+            d.id = 'loading-indicator';
+            d.innerHTML = '<span></span><span></span><span></span>';
+            box.appendChild(d);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function hideLoading() { const el = document.getElementById('loading-indicator'); if (el) el.remove(); }
+
+        function onEnter(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }
+
+        function useExample(el) {
+            document.getElementById('input').value = el.textContent;
+            send();
+        }
+
+        async function send() {
+            const input = document.getElementById('input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            input.value = '';
+            document.getElementById('send-btn').disabled = true;
+            document.getElementById('quick-reply').className = 'quick-reply';
+
+            addUserMsg(text);
+            showLoading();
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: text })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || `服务器错误 (${res.status})`);
+                }
+                const data = await res.json();
+                hideLoading();
+                addBotMsg(data.content);
+
+                // 快捷回复
+                const bar = document.getElementById('quick-reply');
+                bar.innerHTML = '';
+                bar.className = 'quick-reply show';
+                ['继续说下去', '换一种说法', '再详细一点', '👍 好用'].forEach(s => {
+                    const b = document.createElement('button');
+                    b.textContent = s;
+                    if (s === '继续说下去') b.className = 'primary';
+                    b.onclick = () => {
+                        document.getElementById('input').value = text + '\n' + s;
+                        send();
+                    };
+                    bar.appendChild(b);
+                });
+                setTimeout(() => { bar.className = 'quick-reply'; }, 30000);
+            } catch (err) {
+                hideLoading();
+                addBotMsg('⚠️ ' + err.message);
+            } finally {
+                document.getElementById('send-btn').disabled = false;
+                input.focus();
+            }
+        }
+
+        function exportChat() {
+            const msgs = document.querySelectorAll('.msg');
+            if (!msgs.length) { addBotMsg('⚠️ 没有对话记录可导出'); return; }
+            let t = 'ÉRSHE 二奢话术助手 · 对话记录\n' + new Date().toLocaleString('zh-CN') + '\n' + '—'.repeat(30) + '\n\n';
+            msgs.forEach(m => {
+                const c = m.textContent.replace(/^✦ 二奢话术助手\n?/, '');
+                t += (m.classList.contains('bot') ? '【助手】' : '【我】') + '\n' + c + '\n\n';
+            });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([t], { type: 'text/plain;charset=utf-8' }));
+            a.download = 'ershe-chat-' + Date.now() + '.txt';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+    </script>
+</body>
+</html>
