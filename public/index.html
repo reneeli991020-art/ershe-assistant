@@ -99,12 +99,6 @@
         }
 
         /* === SDK Chat 容器 === */
-        #chat-container {
-            flex: 1;
-            position: relative;
-            background: #fff;
-        }
-
         @media (max-width: 768px) {
             header { padding: 0 20px; }
         }
@@ -128,11 +122,12 @@
         </div>
     </header>
 
-    <div id="chat-container"></div>
+    <div id="chat-container" style="flex:1;position:relative;background:#fff;min-height:0;"></div>
 
     <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.19/libs/cn/index.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+        const chatContainer = document.getElementById('chat-container');
         new CozeWebSDK.WebChatClient({
             config: {
                 bot_id: '7628206290594005001',
@@ -153,9 +148,11 @@
                     layout: 'pc',
                     lang: 'zh-CN',
                     zIndex: 1000,
+                    icon: 'https://lf-coze-web-cdn.coze.cn/obj/eden-cn/lm-lgvj/ljhwZthlaukjlkulzlp/coze/chatsdk-logo.png',
                 },
                 header: {
                     isShow: false,
+                    isNeedClose: false,
                 },
                 asstBtn: {
                     isNeed: true,
@@ -166,7 +163,7 @@
                 chatBot: {
                     title: '二奢话术助手',
                     uploadable: true,
-                    el: document.getElementById('chat-container'),
+                    el: chatContainer,
                 },
             },
         });
