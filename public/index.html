@@ -122,13 +122,12 @@
         </div>
     </header>
 
-    <div id="chat-container" style="flex:1;min-height:0;"></div>
+    <div id="chat-container" style="display:none;"></div>
 
     <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.19/libs/cn/index.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-        const chatContainer = document.getElementById('chat-container');
-        const client = new CozeWebSDK.WebChatClient({
+        new CozeWebSDK.WebChatClient({
             config: {
                 type: 'bot',
                 bot_id: '7628206290594005001',
@@ -165,7 +164,6 @@
                     title: '二奢话术助手',
                     uploadable: true,
                     width: 460,
-                    el: document.getElementById('chat-container'),
                 },
             },
         });
