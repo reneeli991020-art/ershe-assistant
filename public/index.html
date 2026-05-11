@@ -122,7 +122,7 @@
         </div>
     </header>
 
-    <div id="chat-container" style="flex:1;position:relative;background:#fff;min-height:0;"></div>
+    <div id="chat-container" style="flex:1;min-height:0;"></div>
 
     <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.19/libs/cn/index.js"></script>
     <script>
@@ -130,7 +130,9 @@
         const chatContainer = document.getElementById('chat-container');
         new CozeWebSDK.WebChatClient({
             config: {
+                type: 'bot',
                 bot_id: '7628206290594005001',
+                isIframe: true,
             },
             auth: {
                 type: 'token',
@@ -148,7 +150,6 @@
                     layout: 'pc',
                     lang: 'zh-CN',
                     zIndex: 1000,
-                    icon: 'https://lf-coze-web-cdn.coze.cn/obj/eden-cn/lm-lgvj/ljhwZthlaukjlkulzlp/coze/chatsdk-logo.png',
                 },
                 header: {
                     isShow: false,
@@ -163,7 +164,7 @@
                 chatBot: {
                     title: '二奢话术助手',
                     uploadable: true,
-                    el: chatContainer,
+                    width: 460,
                 },
             },
         });
