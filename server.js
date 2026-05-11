@@ -22,27 +22,30 @@ function cozeHeaders() {
 }
 
 app.use(cors());
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static('public'));
 
 // COZE 对话代理接口（coze.cn 流程：创建→轮询→取消息）
 app.post('/api/chat', async (req, res) => {
-  const { query } = req.body;
+  const { query, file_ids } = req.body;
   if (!query || typeof query !== 'string' || !query.trim()) {
     return res.status(400).json({ error: '请输入对话内容' });
   }
 
   try {
     // 1. 创建对话
+    const message = { role: 'user', content: query.trim(), content_type: 'text' };
+    if (file_ids && Array.isArray(file_ids) && file_ids.length > 0) {
+      message.file_ids = file_ids;
+    }
+
     const createRes = await fetch(`${COZE_API_BASE}/v3/chat`, {
       method: 'POST',
       headers: cozeHeaders(),
       body: JSON.stringify({
         bot_id: COZE_BOT_ID,
         user_id: 'user-' + Date.now(),
-        additional_messages: [
-          { role: 'user', content: query.trim(), content_type: 'text' }
-        ],
+        additional_messages: [message],
         stream: false,
         auto_save_history: true
       })
@@ -108,6 +111,41 @@ app.post('/api/chat', async (req, res) => {
   } catch (err) {
     console.error('Proxy error:', err.message);
     res.status(502).json({ error: '服务器请求 COZE 失败：' + err.message });
+  }
+});
+
+// COZE 图片上传代理
+app.post('/api/upload', async (req, res) => {
+  const { file, filename } = req.body;
+  if (!file) return res.status(400).json({ error: '缺少文件数据' });
+
+  try {
+    const buffer = Buffer.from(file, 'base64');
+    const blob = new Blob([buffer]);
+    const form = new FormData();
+    form.append('file', blob, filename || 'image.jpg');
+
+    const uploadRes = await fetch(`${COZE_API_BASE}/v1/files/upload`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${COZE_API_KEY}` },
+      body: form
+    });
+
+    if (!uploadRes.ok) {
+      const errText = await uploadRes.text();
+      console.error('COZE upload error:', uploadRes.status, errText);
+      return res.status(502).json({ error: '图片上传失败' });
+    }
+
+    const uploadData = await uploadRes.json();
+    if (uploadData.code !== 0) {
+      return res.status(502).json({ error: `COZE 上传错误: ${uploadData.msg}` });
+    }
+
+    res.json({ file_id: uploadData.data.id });
+  } catch (err) {
+    console.error('Upload proxy error:', err.message);
+    res.status(502).json({ error: '上传失败：' + err.message });
   }
 });
 
