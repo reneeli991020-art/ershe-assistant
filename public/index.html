@@ -29,6 +29,8 @@
             justify-content: space-between;
             flex-shrink: 0;
             border-bottom: 1px solid rgba(201,169,98,0.15);
+            position: relative;
+            z-index: 100;
         }
         .brand { display: flex; align-items: center; gap: 14px; }
         .brand-icon {
@@ -96,358 +98,26 @@
             100% { transform: scale(1.8); opacity: 0; }
         }
 
-        /* === Chat Container === */
-        #chat-box {
+        /* === Chat SDK 容器 === */
+        #chat-container {
             flex: 1;
-            overflow-y: auto;
-            padding: 48px 48px 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
             background: #F8F8F8;
-            max-width: 900px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        #chat-box::-webkit-scrollbar { width: 4px; }
-        #chat-box::-webkit-scrollbar-track { background: transparent; }
-        #chat-box::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
-
-        .msg {
-            max-width: 72%;
-            padding: 16px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            line-height: 1.8;
-            white-space: pre-wrap;
-            word-break: break-word;
-            animation: fadeIn 0.35s ease;
-            font-weight: 400;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .msg.user {
-            align-self: flex-end;
-            background: #1a1a1a;
-            color: #fff;
-            border-bottom-right-radius: 2px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-        .msg.bot {
-            align-self: flex-start;
-            background: #fff;
-            color: #1a1a1a;
-            border-bottom-left-radius: 2px;
-            box-shadow: 0 1px 6px rgba(0,0,0,0.04);
-            border: 1px solid #eee;
-        }
-        .msg.bot .label {
-            font-family: 'Inter', sans-serif;
-            font-size: 10px;
-            color: #C9A962;
-            margin-bottom: 10px;
-            font-weight: 500;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .msg.bot .label::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, #ddd, transparent);
-        }
-
-        /* === Loading === */
-        .loading {
-            align-self: flex-start;
-            display: none;
-            gap: 6px;
-            padding: 18px 24px;
-            background: #fff;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            border-bottom-left-radius: 2px;
-            box-shadow: 0 1px 6px rgba(0,0,0,0.04);
-        }
-        .loading.show { display: flex; }
-        .loading span {
-            width: 6px; height: 6px;
-            background: #d0d0d0;
-            border-radius: 50%;
-            animation: dotPulse 1.4s infinite;
-        }
-        .loading span:nth-child(2) { animation-delay: 0.2s; }
-        .loading span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes dotPulse { 0%,60%,100% { opacity: 0.3; } 30% { opacity: 1; } }
-
-        /* === Welcome === */
-        .welcome {
-            text-align: center;
-            padding: 80px 20px 60px;
-            max-width: 460px;
-            margin: auto;
-            width: 100%;
-        }
-        .welcome .logo {
-            font-family: 'Playfair Display', 'Times New Roman', serif;
-            font-size: 52px;
-            font-weight: 700;
-            font-style: italic;
-            background: linear-gradient(135deg, #D4AF37 0%, #C9A962 40%, #B8942E 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 20px;
-            letter-spacing: 8px;
-        }
-        .welcome h2 {
-            font-family: 'Noto Serif SC', serif;
-            font-size: 22px;
-            font-weight: 400;
-            color: #1a1a1a;
-            margin-bottom: 6px;
-            letter-spacing: 4px;
-        }
-        .welcome .gold-line {
-            width: 40px;
-            height: 1px;
-            background: linear-gradient(90deg, #D4AF37, #C9A962, #B8942E);
-            margin: 18px auto;
-        }
-        .welcome p {
-            font-size: 13px;
-            color: #999;
-            line-height: 2;
-            font-weight: 300;
-            letter-spacing: 0.5px;
-        }
-        .welcome p em {
-            color: #C9A962;
-            font-style: normal;
-            font-weight: 400;
-        }
-
-        /* === Example Cards === */
-        .examples {
-            margin-top: 36px;
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .examples li {
-            font-size: 13px;
-            color: #888;
-            cursor: pointer;
-            padding: 14px 20px;
-            border-radius: 8px;
-            border: 1px solid #e8e8e8;
-            background: #fff;
-            transition: all 0.3s ease;
-            text-align: left;
-            font-weight: 400;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.02);
             position: relative;
             overflow: hidden;
         }
-        .examples li::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 2px;
-            background: linear-gradient(180deg, #D4AF37, #C9A962);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .examples li:hover {
-            border-color: #C9A962;
-            color: #1a1a1a;
-            background: #fff;
-            box-shadow: 0 4px 16px rgba(201,169,98,0.1);
-            transform: translateY(-1px);
-        }
-        .examples li:hover::before {
-            opacity: 1;
+
+        /* SDK 内部样式覆盖 */
+        #chat-container .coze-chat {
+            height: 100% !important;
         }
 
-        /* === Input Area === */
-        .input-wrapper {
-            background: #F8F8F8;
-            padding: 0 48px 24px;
-            flex-shrink: 0;
-        }
-        .input-area {
-            max-width: 900px;
-            margin: 0 auto;
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 6px 6px 6px 20px;
-            display: flex;
-            gap: 8px;
-            align-items: flex-end;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-            transition: border-color 0.25s ease, box-shadow 0.25s ease;
-        }
-        .input-area:focus-within {
-            border-color: #C9A962;
-            box-shadow: 0 4px 24px rgba(201,169,98,0.12);
-        }
-        .input-area textarea {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 10px 0;
-            font-size: 14px;
-            color: #1a1a1a;
-            resize: none;
-            height: 44px;
-            max-height: 120px;
-            outline: none;
-            font-family: 'Inter', 'PingFang SC', -apple-system, sans-serif;
-            font-weight: 400;
-        }
-        .input-area textarea::placeholder { color: #ccc; font-weight: 300; }
-        .upload-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px 4px 8px 8px;
-            font-size: 18px;
-            color: #bbb;
-            transition: color 0.2s;
-            display: flex;
-            align-items: center;
-            height: 40px;
-            flex-shrink: 0;
-        }
-        .upload-btn:hover { color: #C9A962; }
-        .preview-area {
-            max-width: 900px;
-            margin: 0 auto 8px;
-            padding: 0 4px;
-            display: none;
-        }
-        .preview-area.show { display: block; }
-        .preview-area .preview-inner {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            padding: 6px 10px 6px 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .preview-area img {
-            width: 36px;
-            height: 36px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-        .preview-area .preview-name {
-            font-size: 12px;
-            color: #888;
-            max-width: 140px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            font-weight: 400;
-        }
-        .preview-area .preview-close {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            color: #ccc;
-            padding: 2px;
-            line-height: 1;
-        }
-        .preview-area .preview-close:hover { color: #999; }
-        .input-area button {
-            background: #000;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            padding: 0 24px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            height: 40px;
-            letter-spacing: 1px;
-            font-family: 'Inter', sans-serif;
-        }
-        .input-area button:hover { background: #222; }
-        .input-area button:disabled { opacity: 0.2; cursor: not-allowed; }
-
-        /* === Quick Reply === */
-        .quick-reply {
-            display: none;
-            gap: 8px;
-            padding: 0 48px 20px;
-            flex-shrink: 0;
-            max-width: 900px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        .quick-reply.show { display: flex; }
-        .quick-reply button {
-            flex-shrink: 0;
-            background: #fff;
-            border: 1px solid #e8e8e8;
-            border-radius: 20px;
-            padding: 6px 18px;
-            font-size: 12px;
-            color: #888;
-            cursor: pointer;
-            white-space: nowrap;
-            font-weight: 400;
-            transition: all 0.25s ease;
-            font-family: 'Inter', 'PingFang SC', -apple-system, sans-serif;
-        }
-        .quick-reply button:hover {
-            border-color: #C9A962;
-            color: #C9A962;
-            background: rgba(201,169,98,0.04);
-        }
-        .quick-reply button.primary {
-            background: #000;
-            color: #fff;
-            border-color: #000;
-        }
-        .quick-reply button.primary:hover {
-            background: #222;
-            border-color: #222;
-            color: #fff;
-        }
-
-        /* === Responsive === */
         @media (max-width: 768px) {
             header { padding: 0 20px; }
-            #chat-box { padding: 28px 20px 16px; }
-            .msg { max-width: 88%; font-size: 13px; }
-            .input-wrapper { padding: 0 20px 16px; }
-            .quick-reply { padding: 0 20px 14px; }
-            .welcome { padding: 60px 16px 40px; }
         }
         @media (max-width: 480px) {
             .brand-name { font-size: 12px; letter-spacing: 3px; }
             .brand-sub { display: none; }
             header { padding: 0 16px; height: 56px; }
-            #chat-box { padding: 20px 12px 12px; gap: 16px; }
-            .msg { max-width: 92%; padding: 14px 18px; }
-            .input-area { padding: 4px 4px 4px 14px; }
-            .input-area textarea { font-size: 13px; }
-            .input-area button { padding: 0 16px; font-size: 12px; }
         }
     </style>
 </head>
@@ -464,163 +134,32 @@
         </div>
     </header>
 
-    <div id="chat-box">
-        <div class="welcome" id="welcome">
-            <div class="logo">É</div>
-            <h2>二奢话术助手</h2>
-            <div class="gold-line"></div>
-            <p>
-                劳力士专项 · 知识库与大模型双版本输出<br>
-                为转转顾问提供 <em>专业话术支持</em>
-            </p>
-            <ul class="examples" id="example-list">
-                <li onclick="useExample(this)">熊猫迪 95 新全套带保卡现在什么价</li>
-                <li onclick="useExample(this)">绿水鬼 126610LV 客户说价格太低怎么办</li>
-                <li onclick="useExample(this)">劳力士保卡怎么看年份，2020 年保卡有影响吗</li>
-            </ul>
-        </div>
-    </div>
+    <div id="chat-container"></div>
 
-    <div class="quick-reply" id="quick-reply"></div>
-
-    <div class="input-wrapper">
-        <div class="preview-area" id="preview-area">
-            <div class="preview-inner">
-                <img id="preview-img" src="" alt="">
-                <span class="preview-name" id="preview-name"></span>
-                <button class="preview-close" onclick="clearImage()">✕</button>
-            </div>
-        </div>
-        <div class="input-area">
-            <textarea id="input" rows="1" placeholder="输入型号、成色、配件和客户对话…" onkeydown="onEnter(event)"></textarea>
-            <button class="upload-btn" onclick="document.getElementById('file-input').click()" title="上传图片">◇</button>
-            <input type="file" id="file-input" accept="image/*" onchange="onImageSelect(event)" style="display:none">
-            <button id="send-btn" onclick="send()">发送</button>
-        </div>
-    </div>
-
+    <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-sdk/1.1.0-beta.0/libs/cn/index.js"></script>
     <script>
-        let selectedFile = null; // { data: base64, name: string }
-
-        function addMsg(html, cls) {
-            const box = document.getElementById('chat-box');
-            const welcome = document.getElementById('welcome');
-            if (welcome) welcome.style.display = 'none';
-            const div = document.createElement('div');
-            div.className = 'msg ' + cls;
-            div.innerHTML = html;
-            box.appendChild(div);
-            box.scrollTop = box.scrollHeight;
-            return div;
-        }
-        function addBotMsg(text) {
-            return addMsg(
-                '<div class="label">✦ 二奢话术助手</div>' + text.replace(/\n/g, '<br>'),
-                'bot'
-            );
-        }
-        function addUserMsg(text) { return addMsg(text, 'user'); }
-        function showLoading() {
-            const d = document.createElement('div');
-            d.className = 'loading show'; d.id = 'loading-indicator';
-            d.innerHTML = '<span></span><span></span><span></span>';
-            document.getElementById('chat-box').appendChild(d);
-            d.scrollIntoView();
-        }
-        function hideLoading() { const el = document.getElementById('loading-indicator'); if (el) el.remove(); }
-        function onEnter(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }
-
-        function onImageSelect(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                selectedFile = { data: ev.target.result.split(',')[1], name: file.name };
-                document.getElementById('preview-img').src = ev.target.result;
-                document.getElementById('preview-name').textContent = file.name;
-                document.getElementById('preview-area').className = 'preview-area show';
-            };
-            reader.readAsDataURL(file);
-            e.target.value = '';
-        }
-        function clearImage() {
-            selectedFile = null;
-            document.getElementById('preview-area').className = 'preview-area';
-        }
-
-        function useExample(el) {
-            document.getElementById('input').value = el.textContent;
-            send();
-        }
-
-        async function send() {
-            const input = document.getElementById('input');
-            const text = input.value.trim();
-            if (!text && !selectedFile) return;
-
-            document.getElementById('send-btn').disabled = true;
-            document.getElementById('quick-reply').className = 'quick-reply';
-
-            addUserMsg(text || (selectedFile ? '[图片]' : ''));
-            showLoading();
-
-            try {
-                let file_ids = [];
-                if (selectedFile) {
-                    const uploadRes = await fetch('/api/upload', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            file: selectedFile.data,
-                            filename: selectedFile.name
-                        })
-                    });
-                    if (!uploadRes.ok) {
-                        const err = await uploadRes.json();
-                        throw new Error(err.error || '图片上传失败');
+        document.addEventListener('DOMContentLoaded', function () {
+            new CozeWebSDK.WebChat({
+                botId: '7628206290594005001',
+                el: document.getElementById('chat-container'),
+                lang: 'zh-CN',
+                auth: { type: 'none' },
+                ui: {
+                    base: {
+                        theme: 'light',
+                        primaryColor: '#C9A962',
+                        header: {
+                            visible: false
+                        }
+                    },
+                    chat: {
+                        input: {
+                            placeholder: '输入型号、成色、配件和客户对话…'
+                        }
                     }
-                    const uploadData = await uploadRes.json();
-                    file_ids = [uploadData.file_id];
-                    clearImage();
                 }
-
-                const origText = text;
-                input.value = '';
-
-                const chatRes = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: text, file_ids: file_ids.length > 0 ? file_ids : undefined })
-                });
-                if (!chatRes.ok) {
-                    const err = await chatRes.json();
-                    throw new Error(err.error || '请求失败');
-                }
-                const data = await chatRes.json();
-                hideLoading();
-                addBotMsg(data.content);
-
-                const bar = document.getElementById('quick-reply');
-                bar.innerHTML = ''; bar.className = 'quick-reply show';
-                ['继续说下去', '换一种说法', '再详细一点'].forEach(s => {
-                    const b = document.createElement('button');
-                    b.textContent = s;
-                    if (s === '继续说下去') b.className = 'primary';
-                    b.onclick = () => {
-                        document.getElementById('input').value = (origText || '') + '\n' + s;
-                        send();
-                    };
-                    bar.appendChild(b);
-                });
-                setTimeout(() => { bar.className = 'quick-reply'; }, 30000);
-            } catch (err) {
-                hideLoading();
-                addBotMsg('⚠️ ' + err.message);
-            } finally {
-                document.getElementById('send-btn').disabled = false;
-                input.focus();
-            }
-        }
+            });
+        });
     </script>
 </body>
 </html>
