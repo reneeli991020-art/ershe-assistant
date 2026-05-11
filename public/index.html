@@ -98,19 +98,6 @@
             100% { transform: scale(1.8); opacity: 0; }
         }
 
-        /* === Chat SDK 容器 === */
-        #chat-container {
-            flex: 1;
-            background: #F8F8F8;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* SDK 内部样式覆盖 */
-        #chat-container .coze-chat {
-            height: 100% !important;
-        }
-
         @media (max-width: 768px) {
             header { padding: 0 20px; }
         }
@@ -134,31 +121,22 @@
         </div>
     </header>
 
-    <div id="chat-container"></div>
-
-    <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-sdk/1.1.0-beta.0/libs/cn/index.js"></script>
+    <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.19/libs/cn/index.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            new CozeWebSDK.WebChat({
-                botId: '7628206290594005001',
-                el: document.getElementById('chat-container'),
-                lang: 'zh-CN',
-                auth: { type: 'none' },
-                ui: {
-                    base: {
-                        theme: 'light',
-                        primaryColor: '#C9A962',
-                        header: {
-                            visible: false
-                        }
-                    },
-                    chat: {
-                        input: {
-                            placeholder: '输入型号、成色、配件和客户对话…'
-                        }
-                    }
+        new CozeWebSDK.WebChatClient({
+            config: {
+                bot_id: '7628206290594005001',
+            },
+            componentProps: {
+                title: '二奢话术助手',
+            },
+            auth: {
+                type: 'token',
+                token: 'pat_********',
+                onRefreshToken: function () {
+                    return 'pat_********'
                 }
-            });
+            }
         });
     </script>
 </body>
