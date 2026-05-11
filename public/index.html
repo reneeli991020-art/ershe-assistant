@@ -128,7 +128,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
         const chatContainer = document.getElementById('chat-container');
-        new CozeWebSDK.WebChatClient({
+        const client = new CozeWebSDK.WebChatClient({
             config: {
                 type: 'bot',
                 bot_id: '7628206290594005001',
@@ -156,7 +156,7 @@
                     isNeedClose: false,
                 },
                 asstBtn: {
-                    isNeed: true,
+                    isNeed: false,
                 },
                 footer: {
                     isShow: false,
@@ -169,6 +169,12 @@
                 },
             },
         });
+        // 自动打开聊天面板
+        setTimeout(function() {
+            if (client && typeof client.open === 'function') {
+                client.open();
+            }
+        }, 1000);
         });
     </script>
 </body>
