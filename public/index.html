@@ -19,7 +19,7 @@
             color: #1a1a1a;
         }
 
-        /* === Header — 香奈儿黑标 === */
+        /* === Header === */
         header {
             background: #000;
             padding: 0 48px;
@@ -98,6 +98,13 @@
             100% { transform: scale(1.8); opacity: 0; }
         }
 
+        /* === SDK Chat 容器 === */
+        #chat-container {
+            flex: 1;
+            position: relative;
+            background: #fff;
+        }
+
         @media (max-width: 768px) {
             header { padding: 0 20px; }
         }
@@ -121,22 +128,44 @@
         </div>
     </header>
 
+    <div id="chat-container"></div>
+
     <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.19/libs/cn/index.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
         new CozeWebSDK.WebChatClient({
             config: {
                 bot_id: '7628206290594005001',
             },
-            componentProps: {
-                title: '二奢话术助手',
-            },
             auth: {
-                type: 'token',
-                token: 'pat_********',
-                onRefreshToken: function () {
-                    return 'pat_********'
-                }
-            }
+                type: 'unauth',
+            },
+            userInfo: {
+                id: 'user',
+                nickname: 'User',
+            },
+            ui: {
+                base: {
+                    layout: 'pc',
+                    lang: 'zh-CN',
+                    zIndex: 1000,
+                },
+                header: {
+                    isShow: false,
+                },
+                asstBtn: {
+                    isNeed: false,
+                },
+                footer: {
+                    isShow: false,
+                },
+                chatBot: {
+                    title: '二奢话术助手',
+                    uploadable: true,
+                    el: document.getElementById('chat-container'),
+                },
+            },
+        });
         });
     </script>
 </body>
