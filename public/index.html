@@ -156,7 +156,7 @@
                     isNeedClose: false,
                 },
                 asstBtn: {
-                    isNeed: false,
+                    isNeed: true,
                 },
                 footer: {
                     isShow: false,
@@ -168,13 +168,6 @@
                     el: document.getElementById('chat-container'),
                 },
             },
-        });
-        // 自动打开聊天面板
-        setTimeout(function() {
-            if (client && typeof client.open === 'function') {
-                client.open();
-            }
-        }, 1000);
         });
     </script>
 </body>
