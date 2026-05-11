@@ -138,7 +138,11 @@
                 bot_id: '7628206290594005001',
             },
             auth: {
-                type: 'unauth',
+                type: 'token',
+                token: 'cztei_l9IdqrimgY2lua9kvCoFmdnx7T1Zcs03SsLZ99A7AYFfebLKPIkBKpQHXeOOFH7DU',
+                onRefreshToken: async function () {
+                    return 'cztei_l9IdqrimgY2lua9kvCoFmdnx7T1Zcs03SsLZ99A7AYFfebLKPIkBKpQHXeOOFH7DU';
+                },
             },
             userInfo: {
                 id: 'user',
