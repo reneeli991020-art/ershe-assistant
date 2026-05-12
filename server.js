@@ -121,14 +121,20 @@ app.post('/api/upload', async (req, res) => {
 
   try {
     const buffer = Buffer.from(file, 'base64');
-    const fileObj = new File([buffer], filename || 'image.jpg', { type: mime || 'image/jpeg' });
-    const form = new FormData();
-    form.append('file', fileObj);
+    const mimeType = mime || 'image/jpeg';
+    const fname = filename || 'image.jpg';
+    const boundary = '----FormBoundary' + Math.random().toString(36).slice(2);
+    const header = `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${fname}"\r\nContent-Type: ${mimeType}\r\n\r\n`;
+    const footer = `\r\n--${boundary}--\r\n`;
+    const body = Buffer.concat([Buffer.from(header), buffer, Buffer.from(footer)]);
 
     const uploadRes = await fetch(`${COZE_API_BASE}/v1/files/upload`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${COZE_API_KEY}` },
-      body: form
+      headers: {
+        'Authorization': `Bearer ${COZE_API_KEY}`,
+        'Content-Type': `multipart/form-data; boundary=${boundary}`
+      },
+      body: body
     });
 
     const uploadData = await uploadRes.json();
