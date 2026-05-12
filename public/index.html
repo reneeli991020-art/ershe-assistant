@@ -291,23 +291,12 @@
             }
             const container = div.querySelector('.bot-content');
             const parts = parseVersions(text);
-            let charIndex = 0;
-            const fullHtml = parts.map(p =>
+            container.innerHTML = parts.map(p =>
                 '<div class="version-card ' + p.cls + '">' +
-                '<div class="v-label">' + p.label + '</div>' +
+                (p.label ? '<div class="v-label">' + p.label + '</div>' : '') +
                 '<div class="v-content">' + p.content.replace(/\n/g, '<br>') + '</div>' +
                 '</div>'
             ).join('');
-            const speed = 10;
-            function type() {
-                if (charIndex < fullHtml.length) {
-                    container.innerHTML += fullHtml.charAt(charIndex);
-                    charIndex++;
-                    setTimeout(type, speed);
-                    div.parentElement.scrollTop = div.parentElement.scrollHeight;
-                }
-            }
-            type();
             return div;
         }
         function parseVersions(text) {
