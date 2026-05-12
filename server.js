@@ -45,7 +45,7 @@ app.post('/api/chat', async (req, res) => {
   try {
     const messages = [{ role: 'user', content: query.trim(), content_type: 'text' }];
     if (file_ids && Array.isArray(file_ids) && file_ids.length > 0) {
-      messages.push({ role: 'user', content: file_ids[0], content_type: 'image' });
+      messages.push({ role: 'user', content: JSON.stringify({ file_id: file_ids[0] }), content_type: 'image' });
     }
 
     const createRes = await fetch(`${COZE_API_BASE}/v3/chat`, {
