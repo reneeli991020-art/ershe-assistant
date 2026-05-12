@@ -106,6 +106,8 @@
         .version-card.llm .v-label { color: #B8942E; }
         .version-card.llm .v-label::before { background: #D4AF37; }
         .version-card .v-content { color: #333; font-weight: 400; }
+        .version-card.disclaimer { background: transparent; border-left: none; padding: 8px 16px 0; margin-top: 4px; }
+        .version-card.disclaimer .v-content { font-size: 11px; color: #bbb; line-height: 1.6; }
 
         .loading { align-self: flex-start; display: none; gap: 10px; padding: 16px 24px; background: #fff; border: 1px solid #eee; border-radius: 8px; border-bottom-left-radius: 2px; box-shadow: 0 1px 6px rgba(0,0,0,0.04); flex-direction: column; }
         .loading.show { display: flex; }
@@ -271,16 +273,23 @@
         }
         function parseVersions(text) {
             const parts = [];
-            const kbMatch = text.match(/(?:知识库版|知识库)[：:]\s*([\s\S]*?)(?=大模型版|大模型[：:]|$)/);
-            const llmMatch = text.match(/(?:大模型版|大模型)[：:]\s*([\s\S]*?)(?=知识库版|知识库[：:]|$)/);
-            if (kbMatch && kbMatch[1].trim()) {
-                parts.push({ cls: 'kb', label: '知识库版话术', content: kbMatch[1].trim() });
-            }
-            if (llmMatch && llmMatch[1].trim()) {
-                parts.push({ cls: 'llm', label: '大模型版话术', content: llmMatch[1].trim() });
-            }
+            const kbRegex = /(?:###\s*版本[一二1][：:]\s*)?知识库版[话术]?[：:]\s*([\s\S]*?)(?=(?:###\s*版本[二2][：:]\s*)?大模型版[话术]?[：:]|$)/;
+            const llmRegex = /(?:###\s*版本[二2][：:]\s*)?大模型版[话术]?[：:]\s*([\s\S]*?)(?=(?:###\s*版本[一二1][：:]\s*)?知识库版[话术]?[：:]|$)/;
+            const kbMatch = text.match(kbRegex);
+            const llmMatch = text.match(llmRegex);
+            let kbContent = kbMatch && kbMatch[1].trim() ? kbMatch[1].trim() : '';
+            let llmContent = llmMatch && llmMatch[1].trim() ? llmMatch[1].trim() : '';
+            const disclaimer = text.match(/(市场信息仅供参考[\s\S]*)$/);
+            const disclaimText = disclaimer ? disclaimer[1].trim() : '';
+            if (kbContent) kbContent = kbContent.replace(disclaimText, '').trim();
+            if (llmContent) llmContent = llmContent.replace(disclaimText, '').trim();
+            if (kbContent) parts.push({ cls: 'kb', label: '知识库版话术', content: kbContent.replace(/^###\s*/, '') });
+            if (llmContent) parts.push({ cls: 'llm', label: '大模型版话术', content: llmContent.replace(/^###\s*/, '') });
             if (parts.length === 0) {
-                parts.push({ cls: 'kb', label: '话术参考', content: text });
+                parts.push({ cls: 'kb', label: '话术参考', content: text.replace(disclaimText, '').trim().replace(/^###\s*/, '') });
+            }
+            if (disclaimText) {
+                parts.push({ cls: 'disclaimer', label: '', content: disclaimText });
             }
             return parts;
         }
