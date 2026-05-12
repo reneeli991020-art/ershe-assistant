@@ -62,7 +62,7 @@ app.post('/api/chat', async (req, res) => {
 
     let status = 'in_progress';
     let attempts = 0;
-    while (status === 'in_progress' && attempts < 30) {
+    while (status === 'in_progress' && attempts < 60) {
       await new Promise(r => setTimeout(r, 2000));
       const pollRes = await fetch(
         `${COZE_API_BASE}/v3/chat/retrieve?chat_id=${chatId}&conversation_id=${convId}`,

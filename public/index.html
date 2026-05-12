@@ -248,8 +248,16 @@
             box.scrollTop = box.scrollHeight;
             return div;
         }
-        function addBotMsg(text) {
-            const div = addMsg('<div class="label">✦ 二奢话术助手</div><div class="bot-content"></div>', 'bot');
+        function addBotMsg(text, isError) {
+            const div = addMsg('<div class="label">✦ ' + (isError ? '' : '二奢话术助手</div><div class="bot-content"></div>'), 'bot');
+            if (isError) {
+                const span = document.createElement('span');
+                span.style.cssText = 'color:#e74c3c;font-weight:400;';
+                span.textContent = text;
+                div.appendChild(span);
+                div.parentElement.scrollTop = div.parentElement.scrollHeight;
+                return div;
+            }
             const container = div.querySelector('.bot-content');
             const parts = parseVersions(text);
             let charIndex = 0;
@@ -395,7 +403,7 @@
                 setTimeout(() => { bar.className = 'quick-reply'; }, 30000);
             } catch (err) {
                 hideLoading();
-                addBotMsg('⚠️ ' + err.message);
+                addBotMsg('⚠️ ' + err.message, true);
             } finally {
                 document.getElementById('send-btn').disabled = false;
                 input.focus();
