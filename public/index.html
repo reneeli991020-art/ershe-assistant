@@ -18,8 +18,6 @@
             flex-direction: column;
             color: #1a1a1a;
         }
-
-        /* === Header === */
         header {
             background: #000;
             padding: 0 48px;
@@ -97,8 +95,6 @@
             0% { transform: scale(1); opacity: 0.6; }
             100% { transform: scale(1.8); opacity: 0; }
         }
-
-        /* === SDK Chat 容器 === */
         @media (max-width: 768px) {
             header { padding: 0 20px; }
         }
@@ -122,49 +118,21 @@
         </div>
     </header>
 
-
     <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.19/libs/cn/index.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-        new CozeWebSDK.WebChatClient({
-            config: {
-                type: 'bot',
-                bot_id: '7628206290594005001',
-                isIframe: true,
-            },
-            auth: {
-                type: 'token',
-                token: 'cztei_h3hCkQpH7Ztly1aPjchpRGU7fd48VLa8WFtsyeD0JVp2JDmz74Jt2mGaTOt03DgZ2',
-                onRefreshToken: async function () {
-                    return 'cztei_h3hCkQpH7Ztly1aPjchpRGU7fd48VLa8WFtsyeD0JVp2JDmz74Jt2mGaTOt03DgZ2';
+            new CozeWebSDK.WebChatClient({
+                config: {
+                    bot_id: '7628206290594005001',
                 },
-            },
-            userInfo: {
-                id: 'user',
-                nickname: 'User',
-            },
-            ui: {
-                base: {
-                    layout: 'pc',
-                    lang: 'zh-CN',
-                    zIndex: 1000,
-                },
-                header: {
-                    isShow: false,
-                    isNeedClose: false,
-                },
-                asstBtn: {
-                    isNeed: true,
-                },
-                footer: {
-                    isShow: false,
-                },
-                chatBot: {
-                    title: '二奢话术助手',
-                    uploadable: true,
-                    width: 460,
-                },
-            },
+                auth: {
+                    type: 'token',
+                    token: 'pat_********',
+                    onRefreshToken: function () {
+                        return 'pat_********'
+                    }
+                }
+            });
         });
     </script>
 </body>
