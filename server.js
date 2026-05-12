@@ -43,9 +43,9 @@ app.post('/api/chat', async (req, res) => {
   logQuery({ query: query.trim(), hasImage: !!(file_ids && file_ids.length > 0), status: 'pending' });
 
   try {
-    const message = { role: 'user', content: query.trim(), content_type: 'text' };
+    const messages = [{ role: 'user', content: query.trim(), content_type: 'text' }];
     if (file_ids && Array.isArray(file_ids) && file_ids.length > 0) {
-      message.file_ids = file_ids;
+      messages.push({ role: 'user', content: file_ids[0], content_type: 'image' });
     }
 
     const createRes = await fetch(`${COZE_API_BASE}/v3/chat`, {
@@ -54,7 +54,7 @@ app.post('/api/chat', async (req, res) => {
       body: JSON.stringify({
         bot_id: COZE_BOT_ID,
         user_id: 'user-' + Date.now(),
-        additional_messages: [message],
+        additional_messages: messages,
         stream: false,
         auto_save_history: true
       })
