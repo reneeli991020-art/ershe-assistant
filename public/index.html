@@ -87,13 +87,25 @@
         .msg { max-width: 72%; padding: 16px 24px; border-radius: 8px; font-size: 14px; line-height: 1.8; white-space: pre-wrap; word-break: break-word; animation: fadeIn 0.35s ease; font-weight: 400; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         .msg.user { align-self: flex-end; background: #1a1a1a; color: #fff; border-bottom-right-radius: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-        .msg.bot { align-self: flex-start; background: #fff; color: #1a1a1a; border-bottom-left-radius: 2px; box-shadow: 0 1px 6px rgba(0,0,0,0.04); border: 1px solid #eee; }
+        .msg.bot { align-self: flex-start; background: #fff; color: #1a1a1a; border-bottom-left-radius: 2px; box-shadow: 0 1px 6px rgba(0,0,0,0.04); border: 1px solid #eee; max-width: 78%; }
+        @media (max-width: 768px) { .msg.bot { max-width: 92%; } }
         .msg.bot .label {
             font-family: 'Inter', sans-serif; font-size: 10px; color: #C9A962;
-            margin-bottom: 10px; font-weight: 500; letter-spacing: 1.5px;
+            margin-bottom: 14px; font-weight: 500; letter-spacing: 1.5px;
             text-transform: uppercase; display: flex; align-items: center; gap: 10px;
         }
         .msg.bot .label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, #ddd, transparent); }
+        .version-card { margin-top: 12px; padding: 14px 16px; border-radius: 6px; font-size: 13px; line-height: 1.9; position: relative; }
+        .version-card:first-child { margin-top: 0; }
+        .version-card .v-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .version-card .v-label::before { content: ''; width: 3px; height: 12px; border-radius: 2px; }
+        .version-card.kb { background: #F5F7FA; border-left: 3px solid #4A90D9; }
+        .version-card.kb .v-label { color: #4A90D9; }
+        .version-card.kb .v-label::before { background: #4A90D9; }
+        .version-card.llm { background: #FFFBF0; border-left: 3px solid #D4AF37; }
+        .version-card.llm .v-label { color: #B8942E; }
+        .version-card.llm .v-label::before { background: #D4AF37; }
+        .version-card .v-content { color: #333; font-weight: 400; }
 
         .loading { align-self: flex-start; display: none; gap: 10px; padding: 16px 24px; background: #fff; border: 1px solid #eee; border-radius: 8px; border-bottom-left-radius: 2px; box-shadow: 0 1px 6px rgba(0,0,0,0.04); flex-direction: column; }
         .loading.show { display: flex; }
@@ -235,21 +247,42 @@
             return div;
         }
         function addBotMsg(text) {
-            const div = addMsg('<div class="label">✦ 二奢话术助手</div><span class="bot-text"></span>', 'bot');
-            const span = div.querySelector('.bot-text');
-            const html = text.replace(/\n/g, '<br>');
-            let i = 0;
-            const speed = 12;
+            const div = addMsg('<div class="label">✦ 二奢话术助手</div><div class="bot-content"></div>', 'bot');
+            const container = div.querySelector('.bot-content');
+            const parts = parseVersions(text);
+            let charIndex = 0;
+            const fullHtml = parts.map(p =>
+                '<div class="version-card ' + p.cls + '">' +
+                '<div class="v-label">' + p.label + '</div>' +
+                '<div class="v-content">' + p.content.replace(/\n/g, '<br>') + '</div>' +
+                '</div>'
+            ).join('');
+            const speed = 10;
             function type() {
-                if (i < html.length) {
-                    span.innerHTML += html.charAt(i);
-                    i++;
+                if (charIndex < fullHtml.length) {
+                    container.innerHTML += fullHtml.charAt(charIndex);
+                    charIndex++;
                     setTimeout(type, speed);
                     div.parentElement.scrollTop = div.parentElement.scrollHeight;
                 }
             }
             type();
             return div;
+        }
+        function parseVersions(text) {
+            const parts = [];
+            const kbMatch = text.match(/(?:知识库版|知识库)[：:]\s*([\s\S]*?)(?=大模型版|大模型[：:]|$)/);
+            const llmMatch = text.match(/(?:大模型版|大模型)[：:]\s*([\s\S]*?)(?=知识库版|知识库[：:]|$)/);
+            if (kbMatch && kbMatch[1].trim()) {
+                parts.push({ cls: 'kb', label: '知识库版话术', content: kbMatch[1].trim() });
+            }
+            if (llmMatch && llmMatch[1].trim()) {
+                parts.push({ cls: 'llm', label: '大模型版话术', content: llmMatch[1].trim() });
+            }
+            if (parts.length === 0) {
+                parts.push({ cls: 'kb', label: '话术参考', content: text });
+            }
+            return parts;
         }
         function addUserMsg(text) { return addMsg(text, 'user'); }
         let loadingTimer = null;
