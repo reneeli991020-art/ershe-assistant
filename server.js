@@ -116,14 +116,14 @@ app.post('/api/chat', async (req, res) => {
 });
 
 app.post('/api/upload', async (req, res) => {
-  const { file, filename } = req.body;
+  const { file, filename, mime } = req.body;
   if (!file) return res.status(400).json({ error: '缺少文件数据' });
 
   try {
     const buffer = Buffer.from(file, 'base64');
-    const blob = new Blob([buffer]);
+    const blob = new Blob([buffer], { type: mime || 'image/jpeg' });
     const form = new FormData();
-    form.append('file', blob, filename || 'image.jpg');
+    form.append('file', blob, filename || 'image.' + (mime?.includes('png') ? 'png' : 'jpg'));
 
     const uploadRes = await fetch(`${COZE_API_BASE}/v1/files/upload`, {
       method: 'POST',
@@ -131,16 +131,17 @@ app.post('/api/upload', async (req, res) => {
       body: form
     });
 
-    if (!uploadRes.ok) {
-      return res.status(502).json({ error: '图片上传失败' });
-    }
-
     const uploadData = await uploadRes.json();
-    if (uploadData.code !== 0) {
-      return res.status(502).json({ error: `COZE 上传错误: ${uploadData.msg}` });
+    if (!uploadRes.ok || uploadData.code !== 0) {
+      return res.status(502).json({ error: `COZE 上传失败: ${uploadData.msg || uploadRes.status}` });
     }
 
-    res.json({ file_id: uploadData.data.id });
+    const fileId = uploadData.data?.id;
+    if (!fileId) {
+      return res.status(502).json({ error: 'COZE 未返回文件 ID' });
+    }
+
+    res.json({ file_id: fileId });
   } catch (err) {
     res.status(502).json({ error: '上传失败：' + err.message });
   }

@@ -375,7 +375,8 @@
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(ev) {
-                selectedFile = { data: ev.target.result.split(',')[1], name: file.name };
+                selectedFile = { data: ev.target.result.split(',')[1], name: file.name, mime: file.type || 'image/jpeg' };
+                document.getElementById('preview-img').src = ev.target.result;
                 document.getElementById('preview-img').src = ev.target.result;
                 document.getElementById('preview-name').textContent = file.name;
                 document.getElementById('preview-area').className = 'preview-area show';
@@ -410,7 +411,7 @@
                     const uploadRes = await fetch('/api/upload', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ file: selectedFile.data, filename: selectedFile.name })
+                        body: JSON.stringify({ file: selectedFile.data, filename: selectedFile.name, mime: selectedFile.mime })
                     });
                     if (!uploadRes.ok) {
                         let upErr = '图片上传失败';
