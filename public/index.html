@@ -281,20 +281,20 @@
         }
         function parseVersions(text) {
             const parts = [];
-            const kbRegex = /(?:###\s*版本[一二1][：:]\s*)?知识库版[话术]?[：:]\s*([\s\S]*?)(?=(?:###\s*版本[二2][：:]\s*)?大模型版[话术]?[：:]|$)/;
-            const llmRegex = /(?:###\s*版本[二2][：:]\s*)?大模型版[话术]?[：:]\s*([\s\S]*?)(?=(?:###\s*版本[一二1][：:]\s*)?知识库版[话术]?[：:]|$)/;
-            const kbMatch = text.match(kbRegex);
-            const llmMatch = text.match(llmRegex);
-            let kbContent = kbMatch && kbMatch[1].trim() ? kbMatch[1].trim() : '';
-            let llmContent = llmMatch && llmMatch[1].trim() ? llmMatch[1].trim() : '';
-            const disclaimer = text.match(/(市场信息仅供参考[\s\S]*)$/);
+            // Normalize: strip markdown headers + "版本X：" prefixes
+            let norm = text.replace(/^###\s*/gm, '').replace(/版本[一二1]\s*[：:]\s*/g, '').replace(/版本[二2]\s*[：:]\s*/g, '');
+            const kbMatch = norm.match(/知识库版[话术]?\s*([\s\S]*?)(?=大模型版[话术]?|$)/);
+            const llmMatch = norm.match(/大模型版[话术]?\s*([\s\S]*?)(?=知识库版[话术]?|$)/);
+            let kbContent = kbMatch && kbMatch[1] ? kbMatch[1].trim() : '';
+            let llmContent = llmMatch && llmMatch[1] ? llmMatch[1].trim() : '';
+            const disclaimer = norm.match(/(市场信息仅供参考[\s\S]*)$/);
             const disclaimText = disclaimer ? disclaimer[1].trim() : '';
             if (kbContent) kbContent = kbContent.replace(disclaimText, '').trim();
             if (llmContent) llmContent = llmContent.replace(disclaimText, '').trim();
-            if (kbContent) parts.push({ cls: 'kb', label: '知识库版话术', content: kbContent.replace(/^###\s*/, '') });
-            if (llmContent) parts.push({ cls: 'llm', label: '大模型版话术', content: llmContent.replace(/^###\s*/, '') });
+            if (kbContent) parts.push({ cls: 'kb', label: '知识库版话术', content: kbContent });
+            if (llmContent) parts.push({ cls: 'llm', label: '大模型版话术', content: llmContent });
             if (parts.length === 0) {
-                parts.push({ cls: 'kb', label: '话术参考', content: text.replace(disclaimText, '').trim().replace(/^###\s*/, '') });
+                parts.push({ cls: 'kb', label: '话术参考', content: text.replace(/^###\s*/gm, '').trim() });
             }
             if (disclaimText) {
                 parts.push({ cls: 'disclaimer', label: '', content: disclaimText });

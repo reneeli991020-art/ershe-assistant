@@ -1,9 +1,12 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+const LOG_FILE = path.join(__dirname, 'query_log.jsonl');
 const COZE_API_BASE = 'https://api.coze.cn';
 const COZE_API_KEY = process.env.COZE_API_KEY;
 const COZE_BOT_ID = process.env.COZE_BOT_ID;
@@ -20,6 +23,13 @@ function cozeHeaders() {
   };
 }
 
+function logQuery(entry) {
+  try {
+    const line = JSON.stringify({ timestamp: new Date().toISOString(), ...entry }) + '\n';
+    fs.appendFileSync(LOG_FILE, line, 'utf-8');
+  } catch (e) { /* ignore log errors */ }
+}
+
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static('public'));
@@ -29,6 +39,8 @@ app.post('/api/chat', async (req, res) => {
   if (!query || typeof query !== 'string' || !query.trim()) {
     return res.status(400).json({ error: '请输入对话内容' });
   }
+
+  logQuery({ query: query.trim(), hasImage: !!(file_ids && file_ids.length > 0), status: 'pending' });
 
   try {
     const message = { role: 'user', content: query.trim(), content_type: 'text' };
