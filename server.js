@@ -121,9 +121,9 @@ app.post('/api/upload', async (req, res) => {
 
   try {
     const buffer = Buffer.from(file, 'base64');
-    const blob = new Blob([buffer], { type: mime || 'image/jpeg' });
+    const fileObj = new File([buffer], filename || 'image.jpg', { type: mime || 'image/jpeg' });
     const form = new FormData();
-    form.append('file', blob, filename || 'image.' + (mime?.includes('png') ? 'png' : 'jpg'));
+    form.append('file', fileObj);
 
     const uploadRes = await fetch(`${COZE_API_BASE}/v1/files/upload`, {
       method: 'POST',
