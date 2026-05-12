@@ -150,6 +150,17 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', botId: COZE_BOT_ID ? '已配置' : '未配置' });
 });
 
+app.get('/api/logs', (req, res) => {
+  try {
+    if (!fs.existsSync(LOG_FILE)) return res.json([]);
+    const lines = fs.readFileSync(LOG_FILE, 'utf-8').trim().split('\n').filter(Boolean);
+    const logs = lines.map(l => JSON.parse(l));
+    res.json(logs.slice(-200)); // latest 200
+  } catch (e) {
+    res.status(500).json({ error: '读取日志失败' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`✅ 二奢话术助手服务已启动`);
   console.log(`   访问地址: http://localhost:${PORT}`);
